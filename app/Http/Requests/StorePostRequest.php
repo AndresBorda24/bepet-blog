@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use \Illuminate\Support\Str;
 
 class StorePostRequest extends FormRequest
 {
@@ -17,6 +18,30 @@ class StorePostRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'slug' => Str::slug($this->title),
+        ]);
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'slug.unique' => 'Please change the title :3',
+        ];
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -25,6 +50,7 @@ class StorePostRequest extends FormRequest
     {
         return [
             'title' => ['required', 'unique:posts', 'min:10','max:255', 'regex:/[a-zA-Z0-9]{3,}/i', 'not_regex:/^[\s{}.+$]/i'],
+            'slug' => ['unique:posts'],
             'extract' => ['required', 'max:255'],
             'body' => ['required', 'min:255'],
             'category_id' => ['required', 'integer'],

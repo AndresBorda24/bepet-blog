@@ -35,7 +35,6 @@ class PostController extends Controller
     {
         $validated = $request->safe()->merge([
             'status' => 'BORRADOR', 
-            'slug' => \Illuminate\Support\Str::slug($request['title']),
             'user_id' => auth()->id(),
         ])->toArray();
 
@@ -96,6 +95,8 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
+        $this->authorize('update', $post);
+
         $validated = $request->safe()->merge(['slug' => \Illuminate\Support\Str::slug($request['title'])])->toArray();
         $post->update($validated);
         $post->tags()->sync(isset($validated['tags']) ? $validated['tags'] : []);

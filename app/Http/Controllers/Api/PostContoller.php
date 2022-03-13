@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PostCreated;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResouce;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -10,24 +13,25 @@ use Illuminate\Http\Request;
 class PostContoller extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return PostResouce::collection(Post::with(['author', 'category', 'tags'])->get());
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-        //
+        $validated = $request->safe()->merge([
+            'status' => 'BORRADOR', 
+            'user_id' => auth()->id(),
+        ])->toArray();
+
+        $post = Post::create($validated);
+        $post->tags()->sync(isset($validated['tags']) ? $validated['tags'] : []);
+        $path = $request->file('cover')->store('postCovers', 'public');
+
+        event(new PostCreated($post, $path));
+
+        return new PostResouce($post->load(['category', 'tags']));
     }
 
     /**
@@ -38,7 +42,11 @@ class PostContoller extends Controller
      */
     public function show(Post $post)
     {
-        //
+        $this->authorize('view', $post);
+
+        $post->load(['tags', 'category', 'author', 'comments']);
+       
+        return new PostResouce($post);
     }
 
     /**
@@ -48,9 +56,21 @@ class PostContoller extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        $this->authorize('update', $post);
+
+        $validated = $request->safe()->merge(['slug' => \Illuminate\Support\Str::slug($request['title'])])->toArray();
+        $post->update($validated);
+        $post->tags()->sync(isset($validated['tags']) ? $validated['tags'] : []);
+
+        if($request->file('cover')){
+            $path = $request->file('cover')->store('postCovers', 'public');
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($post->cover->link);
+            $post->cover()->update(['link' => $path]);
+        }
+
+        return new PostResouce($post->load(['tags', 'category', 'cover']));
     }
 
     /**
@@ -61,6 +81,13 @@ class PostContoller extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $this->authorize('delete', $post);
+
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($post->cover->link);
+        $post->delete();
+
+        return response()->json([
+            'message' => 'Post deleted succesfully'
+        ]);
     }
 }

@@ -14,7 +14,7 @@ class PostCoverFactory extends Factory
     public function definition()
     {
         return [
-            'link' => 'postCovers/' . $this->faker->image('public/storage/postCovers', 640, 480, null, false),
+            'link' => 'postCovers/' . $this->faker->image('public/storage/postCovers', 320, 240, null, false),
         ];
     }
 }

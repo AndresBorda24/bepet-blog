@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use phpDocumentor\Reflection\Types\This;
 
-class GeneralResource extends JsonResource
+class CommentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +17,9 @@ class GeneralResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
-            'id' => $this->id,
-            'slug' => $this->slug,
-            'name' => $this->name
+            'body' => $this->body,
+            'author' => new UserResource($this->user),
+            'replies' => CommentReplyResource::collection($this->whenLoaded('replies'))
         ];
     }
 }

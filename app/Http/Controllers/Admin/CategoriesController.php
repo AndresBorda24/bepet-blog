@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
 use Illuminate\Http\Request;
 use App\Models\Category;
 
@@ -45,12 +46,9 @@ class CategoriesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {   
-        $validated = array_merge(
-            $request->validate(['name' => 'required|max:50|unique:categories']), 
-            [ 'slug' => \Illuminate\Support\Str::slug($request['name'])
-        ]);
+        $validated = $request->validated();
 
         Category::create($validated);
         return redirect()->route('dashboard.admin.categories.index')->with('success', 'Categoria creada correctamente');
@@ -75,12 +73,9 @@ class CategoriesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryRequest $request, Category $category)
     {
-        $validated = array_merge(
-            $request->validate(['name' => 'required|max:50|unique:categories,name,'. $category->id]), 
-            [ 'slug' => \Illuminate\Support\Str::slug($request['name'])
-        ]);
+        $validated = $request->validated();
 
         $category->update($validated);
         return redirect()->route('dashboard.admin.categories.index')->with('success', 'Categoria Actualizada correctamente');

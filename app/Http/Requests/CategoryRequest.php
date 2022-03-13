@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Http\FormRequest;
-use \Illuminate\Support\Str;
 
-class UpdatePostRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->id === $this->route('post')->user_id || auth()->user()->role_id === \App\Models\Role::IS_ADMIN;
+        return true;
     }
 
     /**
@@ -25,7 +25,7 @@ class UpdatePostRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'slug' => Str::slug($this->title),
+            'slug' => Str::slug($this->name),
         ]);
     }
 
@@ -37,7 +37,7 @@ class UpdatePostRequest extends FormRequest
     public function messages()
     {
         return [
-            'slug.unique' => 'Please change the title :3',
+            'slug.unique' => 'Please change the name :3',
         ];
     }
 
@@ -48,14 +48,20 @@ class UpdatePostRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'title' => 'required|unique:posts,title,' . $this->route('post')->id,
-            'slug' => 'unique:posts,slug,' . $this->route('post')->id,
-            'extract' => 'required|max:255',
-            'body' => 'required|min:500',
-            'category_id' => 'required|integer',
-            'cover' => 'nullable|image|mimes:jpg,jpeg,png',
-            'tags' => 'array'
+        $postRules = [
+            'name' => ['required', 'unique:categories', 'max:50', "min:3"],
+            'slug' => ['required', 'unique:categories']
         ];
+
+        $putRules = [
+            'name' => ['required', 'unique:categories,name,' . $this->route('category')->id, 'max:50', "min:3"],
+            'slug' => ['required', 'unique:categories,slug,' . $this->route('category')->id]
+        ];
+
+ 
+        if (request()->isMethod('POST')) {
+            return $postRules;
+        }
+        return $putRules;
     }
 }

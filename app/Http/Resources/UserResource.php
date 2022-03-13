@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
-class GeneralResource extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +17,10 @@ class GeneralResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
-            'id' => $this->id,
-            'slug' => $this->slug,
-            'name' => $this->name
+            'name' => $this->name,
+            'email' => $this->email,
+            'avatar' => Storage::url($this->avatar->link),
+            'role' => new RoleResource($this->whenLoaded('role')),
         ];
     }
 }

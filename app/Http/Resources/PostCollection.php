@@ -6,6 +6,15 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class PostCollection extends ResourceCollection
 {
+    
+    /**
+     * The resource that this resource collects.
+     *
+     * @var string
+     */
+    public $collects = PostResouce::class;
+
+    
     /**
      * Transform the resource collection into an array.
      *
@@ -15,6 +24,5 @@ class PostCollection extends ResourceCollection
     public function toArray($request)
     {
         return parent::toArray($request);
-        // return 
     }
 }

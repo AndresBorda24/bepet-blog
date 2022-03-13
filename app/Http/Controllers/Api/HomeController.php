@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PostCollection;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -15,15 +16,12 @@ class HomeController extends Controller
     public function index()
     {
         $posts = \App\Models\Post::published()
-                ->latestPublished()
-                ->with(['author', 'tags', 'cover'])
+                // ->latestPublished()
+                ->with(['author', 'tags', 'category','cover'])
                 ->withCount('comments')
                 ->limit(10)
                 ->get();
-        
-        $comm = \App\Models\Comment::joinPosts(['slug', 'title'])->publishedPost()->limit(3)->with('user', 'user.avatar')->get();
-        
-        $categories  = \App\Models\Category::select(['slug', 'name'])->get();
-        
+
+        return new PostCollection($posts);
     }
 }

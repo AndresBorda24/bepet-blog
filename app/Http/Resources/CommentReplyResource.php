@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class GeneralResource extends JsonResource
+class CommentReplyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,7 @@ class GeneralResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
-            'id' => $this->id,
-            'slug' => $this->slug,
-            'name' => $this->name
+            'body' => $this->body,
         ];
     }
 }
