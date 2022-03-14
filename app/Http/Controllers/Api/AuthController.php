@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -38,20 +40,21 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => 'required',
             'password' => 'required'
         ]);
 
-        if (! auth()->attempt($credentials)){
-            return response()->json(['error' => 'Invalid Credentials'], 401);
+        $user = User::where('email', $request->email)->first();
+ 
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
 
-        $user = User::where('email', $request->email)->firstOrfail();
-        $token = $user->createToken('auth-token')->plainTextToken;
-
         return response()->json([
-            'token' => $token,
+            'token' =>  $user->createToken('auth-token')->plainTextToken,
         ]);
     }
 

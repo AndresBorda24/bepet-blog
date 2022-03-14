@@ -6,7 +6,7 @@ use App\Events\PostCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-use App\Http\Resources\PostResouce;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -31,7 +31,7 @@ class PostContoller extends Controller
 
         event(new PostCreated($post, $path));
 
-        return new PostResouce($post->load(['category', 'tags']));
+        return new PostResource($post->load(['category', 'tags']));
     }
 
     /**
@@ -46,7 +46,7 @@ class PostContoller extends Controller
 
         $post->load(['tags', 'category', 'author', 'comments']);
        
-        return new PostResouce($post);
+        return new PostResource($post);
     }
 
     /**
@@ -70,7 +70,7 @@ class PostContoller extends Controller
             $post->cover()->update(['link' => $path]);
         }
 
-        return new PostResouce($post->load(['tags', 'category', 'cover']));
+        return new PostResource($post->load(['tags', 'category', 'cover']));
     }
 
     /**

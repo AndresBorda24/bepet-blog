@@ -12,7 +12,7 @@ class PostCollection extends ResourceCollection
      *
      * @var string
      */
-    public $collects = PostResouce::class;
+    // public $collects = PostResouce::class;
 
     
     /**
@@ -23,6 +23,15 @@ class PostCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        // return parent::toArray($request);
+        return [
+            "meta" => [
+                "count" => $this->collection->count(),
+            ],
+            "data" => $this->collection,
+            "links" => [
+                "self" => "dominio/posts"
+            ]
+        ];
     }
 }

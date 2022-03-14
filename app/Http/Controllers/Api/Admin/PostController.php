@@ -11,7 +11,7 @@ class PostController extends Controller
 {
     public function __invoke()
     {
-        $posts = Post::get();
+        $posts = Post::limit(200)->get();
 
         return new PostCollection($posts);
     }
