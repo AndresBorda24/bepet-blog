@@ -48,20 +48,18 @@ class CategoryRequest extends FormRequest
      */
     public function rules()
     {
-        $postRules = [
-            'name' => ['required', 'unique:categories', 'max:50', "min:3"],
-            'slug' => ['required', 'unique:categories']
-        ];
-
-        $putRules = [
-            'name' => ['required', 'unique:categories,name,' . $this->route('category')->id, 'max:50', "min:3"],
-            'slug' => ['required', 'unique:categories,slug,' . $this->route('category')->id]
-        ];
-
- 
         if (request()->isMethod('POST')) {
-            return $postRules;
+            return [
+                'name' => ['required', 'unique:categories,name', 'max:50', "min:3"],
+                'slug' => ['required', 'unique:categories,slug']
+            ];
         }
-        return $putRules;
+
+        if (request()->isMethod('PUT')) {
+            return [
+                'name' => ['required', 'unique:categories,name,' . $this->route('category')->id, 'max:50', "min:3"],
+                'slug' => ['required', 'unique:categories,slug,' . $this->route('category')->id]
+            ];
+        }
     }
 }
