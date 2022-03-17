@@ -34,10 +34,9 @@ class PostResource extends JsonResource
                         "self" => "ruta Comentarios",
                     ],
                 ],
-
                 "author"  => [
                     "links" => [
-                        "self" => "ruta Autor",
+                        "self" => route('api.v1.users.show', $this->user_id),
                     ],
                 ],
             ],

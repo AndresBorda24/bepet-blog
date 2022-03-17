@@ -17,10 +17,17 @@ class UserResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
-            'name' => $this->name,
-            'email' => $this->email,
-            'avatar' => Storage::url($this->avatar->link),
-            'role' => new RoleResource($this->whenLoaded('role')),
+            'type' => 'User',
+            'id'   => (string) $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'email' => $this->email,
+                'avatar' => Storage::url($this->avatar->link),
+                'role' => new RoleResource($this->whenLoaded('role')),
+            ],
+            'links' => [
+                'self' => route('api.v1.users.show', $this->id)
+            ]
         ];
     }
 }

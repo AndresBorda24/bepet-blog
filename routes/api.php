@@ -11,13 +11,14 @@ Route::get('/', [\App\Http\Controllers\Api\HomeController::class, 'index'])->nam
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('/post/{post}', [\App\Http\Controllers\Api\PostContoller::class, 'show'])->name('post.show');
+Route::get('/post/{post}', [PostContoller::class, 'show'])->name('post.show');
 
 Route::middleware('auth:sanctum')->group( function () {
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->name('user');
-
+    Route::name('users.')->group( function () {
+        Route::get('/user', [\App\Http\Controllers\Api\UsersController::class, 'index'])->name('data');
+        Route::get('/user/{user}', [\App\Http\Controllers\Api\UsersController::class, 'show'])->name('show');
+    });
+    
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/my-posts', '\App\Http\Controllers\Api\User\PostController')->name('user.posts');
     Route::apiResource('post', PostContoller::class)->except(['show', 'index']);
