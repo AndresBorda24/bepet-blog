@@ -17,9 +17,22 @@ class CommentResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
-            'body' => $this->body,
-            'author' => new UserResource($this->user),
-            'replies' => CommentReplyResource::collection($this->whenLoaded('replies'))
+            'type' => 'Comments',
+            'id'   => $this->id,
+            'attributes' => [
+                'body' => $this->body,
+                'commented_on' => $this->created_at->format('d-M-y')
+            ],
+            'relationships' => [
+                'author' => [
+                    'links' => [
+                        "self" => route('api.v1.users.show', $this->user_id),
+                    ]
+                ],
+                'replies' => [
+                    'links' => []
+                ]
+            ]
         ];
     }
 }

@@ -31,12 +31,12 @@ class PostResource extends JsonResource
             "relationships" => [
                 "comments"  => [
                     "links" => [
-                        "self" => "ruta Comentarios",
+                        "related" => route('api.v1.post.comments.index', $this->id),
                     ],
                 ],
                 "author"  => [
                     "links" => [
-                        "self" => route('api.v1.users.show', $this->user_id),
+                        "related" => route('api.v1.users.show', $this->user_id),
                     ],
                 ],
             ],

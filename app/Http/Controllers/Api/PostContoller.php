@@ -60,7 +60,7 @@ class PostContoller extends Controller
     {
         $this->authorize('update', $post);
 
-        $validated = $request->safe()->merge(['slug' => \Illuminate\Support\Str::slug($request['title'])])->toArray();
+        $validated = $request->validated();
         $post->update($validated);
         $post->tags()->sync(isset($validated['tags']) ? $validated['tags'] : []);
 
