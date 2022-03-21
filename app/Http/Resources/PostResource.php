@@ -25,6 +25,7 @@ class PostResource extends JsonResource
                 'body'          => $this->body,
                 'extract'       => $this->extract,
                 'status'        => $this->status,
+                'cover'         => Storage::url($this->cover->link),
                 'posted_at'     => date("d-M-Y", strtotime($this->posted_at)),
                 'created_at'    => $this->created_at->format('d-M-Y'),
             ],

@@ -43,9 +43,7 @@ class PostContoller extends Controller
     public function show(Post $post)
     {
         $this->authorize('view', $post);
-
-        $post->load(['tags', 'category', 'author', 'comments']);
-       
+     
         return new PostResource($post);
     }
 
@@ -83,7 +81,6 @@ class PostContoller extends Controller
     {
         $this->authorize('delete', $post);
 
-        \Illuminate\Support\Facades\Storage::disk('public')->delete($post->cover->link);
         $post->delete();
 
         return response()->json([

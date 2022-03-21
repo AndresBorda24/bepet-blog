@@ -20,7 +20,7 @@ class PostSeeder extends Seeder
             Storage::disk('public')->makeDirectory('postCovers');
         }
 
-        $posts = \App\Models\Post::factory(1000)->create(); 
+        $posts = \App\Models\Post::factory(500)->create(); 
 
         foreach ($posts as $post) {
             \App\Models\PostCover::factory(1)->create([

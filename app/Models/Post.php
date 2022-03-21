@@ -21,6 +21,16 @@ class Post extends Model
         'category_id'
     ];
 
+    protected $with = ['cover'];
+
+
+    protected static function booted()
+    {
+        static::deleting(function ($post) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($post->cover->link);
+        });
+    }
+
     public function getLimitExtractAttribute()
     {
         return substr($this->extract, 0, 40);

@@ -47,6 +47,12 @@ class User extends Authenticatable
     protected $with = ['avatar'];
 
 
+    public function getRoleNameAttribute()
+    {
+        return $this->role->role;
+    }
+
+
     public function isAdmin()
     {
         return in_array($this->role_id, [1, 2]);

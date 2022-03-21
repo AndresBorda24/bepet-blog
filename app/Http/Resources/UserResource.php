@@ -23,7 +23,7 @@ class UserResource extends JsonResource
                 'name' => $this->name,
                 'email' => $this->email,
                 'avatar' => Storage::url($this->avatar->link),
-                'role' => new RoleResource($this->whenLoaded('role')),
+                'role' => $this->role_name,
             ],
             'links' => [
                 'self' => route('api.v1.users.show', $this->id)

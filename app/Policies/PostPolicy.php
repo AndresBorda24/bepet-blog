@@ -4,7 +4,9 @@ namespace App\Policies;
 
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Http\Request;
 
 class PostPolicy
 {
@@ -16,9 +18,10 @@ class PostPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny()
     {
-        return $user->role_id === \App\Models\Role::IS_ADMIN;
+        // return $user->role_id === \App\Models\Role::IS_ADMIN;
+        return auth()->user()->isAdmin();
     }
 
     /**
@@ -29,7 +32,7 @@ class PostPolicy
      */
     public function view(?User $user, Post $post)
     {
-        return $post->status == 'PUBLICADO' || optional($user)->isAdmin() || optional($user)->id == $post->user_id;
+        return $post->status == 'PUBLICADO' || auth('sanctum')->user()->isAdmin() || auth('sanctum')->id() == $post->user_id;
     }
 
     /**
@@ -52,7 +55,8 @@ class PostPolicy
      */
     public function update(User $user, Post $post)
     {
-        return $post->user_id === $user->id || $user->role_id === \App\Models\Role::IS_ADMIN;
+        return $post->user_id === auth('sanctum')->id()  || 
+                auth('sanctum')->user()->role_id === \App\Models\Role::IS_ADMIN;
     }
 
     /**
@@ -64,36 +68,15 @@ class PostPolicy
      */
     public function delete(User $user, Post $post)
     {
-        return $post->user_id === $user->id || $user->role_id === \App\Models\Role::IS_ADMIN;
+        return $post->user_id === auth('sanctum')->id() || 
+                auth('sanctum')->user()->role_id === \App\Models\Role::IS_ADMIN;
     }
-
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restore(User $user, Post $post)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, Post $post)
-    {
-        //
-    }
-
 
     public function postIt(User $user, Post $post)
     {
-        return $post->status == 'BORRADOR' && ($post->user_id === $user->id || $user->role_id === \App\Models\Role::IS_ADMIN); 
+        return $post->status == 'BORRADOR' && (
+                $post->user_id === auth('sanctum')->id() || 
+                auth('sanctum')->user()->role_id === \App\Models\Role::IS_ADMIN
+            ); 
     }
 }
